@@ -1,0 +1,59 @@
+[
+    {
+        "id": 5,
+        "created_at": "2025-02-08T02:00:11.211Z",
+        "completed": false,
+        "dueDate": "2025-02-10T00:00",
+        "name": "Be a user",
+        "status": "In progress",
+        "userId": 2
+    },
+    {
+        "id": 3,
+        "name": "Turn in web APP project",
+        "status": "In progress",
+        "dueDate": "2025-02-10",
+        "userId": 1,
+        "created_at": "2025-02-08T04:18:29.719Z"
+    },
+    {
+        "id": 3,
+        "name": "Sleep ",
+        "status": "Pending",
+        "dueDate": "2025-02-08",
+        "userId": 1,
+        "created_at": "2025-02-08T04:30:15.561Z"
+    },
+    {
+        "id": 4,
+        "name": "dORMIR de chill",
+        "status": "Pending",
+        "dueDate": "2025-02-08",
+        "userId": 1,
+        "created_at": "2025-02-08T04:39:58.720Z"
+    },
+    {
+        "id": 5,
+        "name": "Irme a dormir",
+        "status": "Pending",
+        "dueDate": "2025-02-07T23:45",
+        "userId": 1,
+        "created_at": "2025-02-08T04:47:03.975Z"
+    },
+    {
+        "id": 6,
+        "name": "dormir por favor",
+        "status": "Pending",
+        "dueDate": "2025-02-07T23:00",
+        "userId": 1,
+        "created_at": "2025-02-08T04:56:30.454Z"
+    },
+    {
+        "id": 7,
+        "name": "Sleep as a user",
+        "status": "Pending",
+        "dueDate": "2025-02-08T01:00",
+        "userId": 2,
+        "created_at": "2025-02-08T05:17:17.314Z"
+    }
+]

@@ -1,0 +1,14 @@
+[
+  {
+    "id": 1,
+    "name": "Alejandro",
+    "email": "aljomebe2@gmail.com",
+    "password": "$2b$10$9o/viQA50KxJoV69E1Rw7erfewPfMca39YJDFwPj.q4wdLMQHW1t."
+  },
+  {
+    "id": 2,
+    "name": "Trial User",
+    "email": "trialuser@tasked",
+    "password": "$2b$10$Y38vfG8Tirdb1rqDKWVO4O9Jq30xQy67Il00QetDQFac7LgvV63x2"
+  }
+]

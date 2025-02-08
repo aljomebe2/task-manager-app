@@ -1,0 +1,70 @@
+  <style>
+    .past-due {
+      color: red;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h2>Welcome, {{user.name}}!</h2>
+
+  <!-- Flash messages -->
+  {{#if success_msg}}
+    <div class="alert success">{{success_msg}}</div>
+  {{/if}}
+  {{#if error_msg}}
+    <div class="alert error">{{error_msg}}</div>
+  {{/if}}
+
+  <!-- Filtering and Sorting Form -->
+  <form action="/" method="GET">
+    <!-- Sorting Dropdown -->
+    <label for="sort">Sort by:</label>
+    <select name="sort" id="sort">
+      <option value="name" {{#if (eq sort "name")}}selected{{/if}}>Name</option>
+      <option value="status" {{#if (eq sort "status")}}selected{{/if}}>Status</option>
+      <option value="date" {{#if (eq sort "date")}}selected{{/if}}>Created Date</option>
+      <option value="dueDate" {{#if (eq sort "dueDate")}}selected{{/if}}>Due Date</option>
+    </select>
+
+    <!-- Filtering Dropdown -->
+    <label for="filter">Filter:</label>
+    <select name="filter" id="filter" onchange="this.form.submit()">
+      <option value="" {{#if (eq filter "")}}selected{{/if}}>All Tasks</option>
+      <option value="completed" {{#if (eq filter "completed")}}selected{{/if}}>Completed</option>
+      <option value="incomplete" {{#if (eq filter "incomplete")}}selected{{/if}}>Incomplete</option>
+      <option value="pastDue" {{#if (eq filter "pastDue")}}selected{{/if}}>Past Due</option>
+      <option value="dueToday" {{#if (eq filter "dueToday")}}selected{{/if}}>Due Today</option>
+      <option value="dueTomorrow" {{#if (eq filter "dueTomorrow")}}selected{{/if}}>Due Tomorrow</option>
+      <option value="dueNextWeek" {{#if (eq filter "dueNextWeek")}}selected{{/if}}>Due Next Week</option>
+    </select>
+
+    <!-- Search Field -->
+    <label for="search">Search:</label>
+    <input type="text" name="search" id="search" placeholder="Search tasks" value="{{search}}">
+
+    <button type="submit">Apply Filters</button>
+  </form>
+
+  <!-- Task List -->
+  <h2>Task List</h2>
+  <ul>
+    {{#each tasks}}
+      <li>
+        <span>{{this.name}}</span>
+        <span>{{this.status}}</span>
+        <!-- Mark tasks past due in red using the "lt" helper -->
+        <span class="{{#if (lt this.dueDate ../today)}}past-due{{/if}}">
+          Due Date: {{this.dueDate}}
+        </span>
+        <a href="/edit-task/{{this.id}}">Edit</a>
+        <form action="/delete-task/{{this.id}}" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this task?');">
+          <input type="hidden" name="_method" value="DELETE">
+          <button type="submit">Delete</button>
+        </form>
+      </li>
+    {{else}}
+      <li>No tasks found.</li>
+    {{/each}}
+  </ul>
+</body>

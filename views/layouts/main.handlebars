@@ -1,0 +1,23 @@
+</head>
+<body>
+  <header>
+    <h1>
+      <a href="/">Tasked</a>
+    </h1>
+    <h2>The ultimate task tracker</h2>
+    <nav>
+      <ul>
+        {{#if user}}
+          <li><a href="/add-task">Create New Task</a></li>
+          <li><a href="/logout">Logout</a></li>
+        {{else}}
+          <li><a href="/login">Login</a></li>
+          <li><a href="/register">Register</a></li>
+        {{/if}}
+      </ul>
+    </nav>
+  </header>
+  <main>
+    {{{body}}}
+  </main>
+</body>

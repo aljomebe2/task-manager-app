@@ -1,0 +1,36 @@
+<body>
+  <h1>{{#if task}}Edit Task{{else}}Add Task{{/if}}</h1>
+
+  <!-- Flash messages -->
+  {{#if success_msg}}
+    <div class="alert success">{{success_msg}}</div>
+  {{/if}}
+  {{#if error_msg}}
+    <div class="alert error">{{error_msg}}</div>
+  {{/if}}
+
+  <form action="{{#if task}}/update-task/{{task.id}}{{else}}/add-task{{/if}}" method="POST">
+    <label for="name">Task Name:</label>
+    <input type="text" name="name" id="name" value="{{task.name}}" required>
+
+    <label for="status">Status:</label>
+    <select name="status" id="status">
+      <!-- New options: Pending (default), In progress, Cancelled, Completed -->
+      <option value="Pending" {{#if task}}{{#if (eq task.status "Pending")}}selected{{/if}}{{else}}selected{{/if}}>Pending</option>
+      <option value="In progress" {{#if task}}{{#if (eq task.status "In progress")}}selected{{/if}}{{/if}}>In progress</option>
+      <option value="Cancelled" {{#if task}}{{#if (eq task.status "Cancelled")}}selected{{/if}}{{/if}}>Cancelled</option>
+      <option value="Completed" {{#if task}}{{#if (eq task.status "Completed")}}selected{{/if}}{{/if}}>Completed</option>
+    </select>
+
+    <label for="dueDate">Due Date (with Time):</label>
+    <input type="datetime-local" name="dueDate" id="dueDate" value="{{task.dueDate}}" required>
+
+    <!-- Only show the completion date field if the task is Completed -->
+    {{#if (eq task.status "Completed")}}
+      <label for="completedDate">Completion Date (with Time):</label>
+      <input type="datetime-local" name="completedDate" id="completedDate" value="{{task.completedDate}}">
+    {{/if}}
+
+    <button type="submit">{{#if task}}Update Task{{else}}Add Task{{/if}}</button>
+  </form>
+</body>
