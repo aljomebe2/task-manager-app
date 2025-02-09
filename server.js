@@ -120,66 +120,111 @@ server.get('/logout', (req, res) => {
 
 // Home Route with filtering options
 server.get('/', ensureAuthenticated, (req, res) => {
+    // Get all tasks for the current user.
     let tasks = getTasks().filter(task => task.userId === req.session.user.id);
-    const { sort, filter, search } = req.query;
   
-    // First, filtering by status if filter is "completed" or "incomplete"
-    if (filter === 'completed') {
-      tasks = tasks.filter(task => task.status === 'Completed');
-    } else if (filter === 'incomplete') {
-      tasks = tasks.filter(task => task.status !== 'Completed');
+    // Read separate filter & sort parameters.
+    const statusFilter = req.query.status || 'all';          // 'all', 'Pending', 'In progress', 'Completed', 'Cancelled'
+    const priorityFilter = req.query.priority || 'all';      // 'all', 'High', 'Medium', 'Low'
+    const dueFilter = req.query.due || 'all';                // 'all', 'pastDue', 'dueToday', 'dueTomorrow', 'dueNextWeek', 'specific'
+    const specificDue = req.query.specificDue || '';         // a date string "YYYY-MM-DD" if dueFilter === 'specific'
+    const sort = req.query.sort || '';                       // 'name', 'status', 'dueDate'
+    const searchQuery = req.query.search ? req.query.search.trim().toLowerCase() : '';
+    const view = req.query.view || 'default';                // 'default' (exclude cancelled) or 'all'
+  
+    // If default view, exclude cancelled tasks.
+    if (view === 'default') {
+      tasks = tasks.filter(task => task.status !== 'Cancelled');
+    }
+    
+    // Apply status filter (if not 'all').
+    if (statusFilter !== 'all') {
+      tasks = tasks.filter(task => task.status.toLowerCase() === statusFilter.toLowerCase());
     }
   
-    // Compute date strings for filtering in local time
+    // Apply priority filter (if not 'all').
+    if (priorityFilter !== 'all') {
+      tasks = tasks.filter(task => task.priority.toLowerCase() === priorityFilter.toLowerCase());
+    }
+  
+    // Due date filtering: first, compute local date strings.
     const now = new Date();
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    const todayString = today.toLocaleDateString('en-CA'); // Format: YYYY-MM-DD
+    const todayStr = today.toLocaleDateString('en-CA');  // Format: YYYY-MM-DD
     const tomorrow = new Date(today);
     tomorrow.setDate(tomorrow.getDate() + 1);
-    const tomorrowString = tomorrow.toLocaleDateString('en-CA');
+    const tomorrowStr = tomorrow.toLocaleDateString('en-CA');
     const nextWeek = new Date(today);
     nextWeek.setDate(nextWeek.getDate() + 7);
-    const nextWeekString = nextWeek.toLocaleDateString('en-CA');
+    const nextWeekStr = nextWeek.toLocaleDateString('en-CA');
   
-    // Filtering by due dates – compare using local date strings
-    if (filter === 'pastDue') {
+    if (dueFilter !== 'all') {
       tasks = tasks.filter(task => {
+        if (!task.dueDate) return false;
         const dueStr = new Date(task.dueDate).toLocaleDateString('en-CA');
-        return dueStr < todayString;
-      });
-    } else if (filter === 'dueToday') {
-      tasks = tasks.filter(task => {
-        const dueStr = new Date(task.dueDate).toLocaleDateString('en-CA');
-        return dueStr === todayString;
-      });
-    } else if (filter === 'dueTomorrow') {
-      tasks = tasks.filter(task => {
-        const dueStr = new Date(task.dueDate).toLocaleDateString('en-CA');
-        return dueStr === tomorrowString;
-      });
-    } else if (filter === 'dueNextWeek') {
-      tasks = tasks.filter(task => {
-        const dueStr = new Date(task.dueDate).toLocaleDateString('en-CA');
-        return dueStr > tomorrowString && dueStr <= nextWeekString;
+        if (dueFilter === 'pastDue') {
+          return dueStr < todayStr;
+        } else if (dueFilter === 'dueToday') {
+          return dueStr === todayStr;
+        } else if (dueFilter === 'dueTomorrow') {
+          return dueStr === tomorrowStr;
+        } else if (dueFilter === 'dueNextWeek') {
+          return dueStr > tomorrowStr && dueStr <= nextWeekStr;
+        } else if (dueFilter === 'specific') {
+          return dueStr === specificDue;
+        }
+        return true;
       });
     }
   
-    // Search by task name
-    const searchQuery = search ? search.trim().toLowerCase() : '';
+    // Apply search filtering.
     if (searchQuery) {
       tasks = tasks.filter(task => task.name.toLowerCase().includes(searchQuery));
     }
   
-    // Sorting tasks
-    if (sort === 'name') tasks = tasks.sort((a, b) => a.name.localeCompare(b.name));
-    else if (sort === 'status') tasks = tasks.sort((a, b) => a.status.localeCompare(b.status));
-    else if (sort === 'date') tasks = tasks.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
-    else if (sort === 'dueDate') tasks = tasks.sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
+    // Sorting.
+    if (sort === 'name') {
+      tasks.sort((a, b) => a.name.localeCompare(b.name));
+    } else if (sort === 'status') {
+      // Define a custom order: Pending (1), In progress (2), Completed (3), Cancelled (4)
+      const statusOrder = {
+        'pending': 1,
+        'in progress': 2,
+        'completed': 3,
+        'cancelled': 4
+      };
+      tasks.sort((a, b) => {
+        const sA = statusOrder[a.status.toLowerCase()] || 99;
+        const sB = statusOrder[b.status.toLowerCase()] || 99;
+        return sA - sB;
+      });
+    } else if (sort === 'dueDate') {
+      tasks.sort((a, b) => {
+        if (a.dueDate && b.dueDate) {
+          return new Date(a.dueDate) - new Date(b.dueDate);
+        } else if (a.dueDate) {
+          return -1;
+        } else if (b.dueDate) {
+          return 1;
+        } else {
+          return 0;
+        }
+      });
+    }
   
-    // Pass today's date (local) to the template for visual cues
-    res.render('home', { tasks, sort, filter, search, today: todayString });
-  });
-  
+    // Pass today's local date string for visual cues.
+    res.render('home', { 
+      tasks, 
+      sort, 
+      statusFilter, 
+      priorityFilter, 
+      dueFilter, 
+      specificDue,
+      search: req.query.search || '',
+      view,
+      today: todayStr 
+    });
+  });  
 
 // Render Add Task Form
 server.get('/add-task', ensureAuthenticated, (req, res) => {
@@ -188,34 +233,40 @@ server.get('/add-task', ensureAuthenticated, (req, res) => {
 
 /// Add Task Route
 server.post('/add-task', ensureAuthenticated, (req, res) => {
-    const { name, status, dueDate, completedDate } = req.body;
+    const { name, status, dueDate, completedDate, priority } = req.body;
   
-    if (!name || !status || !dueDate) {
+    // Require name and status; dueDate is optional.
+    if (!name || !status) {
       req.flash('error_msg', 'Missing task details.');
       return res.redirect('/add-task');
     }
   
-    // Parse the due date as a date-time value
     const now = new Date();
-    const due = new Date(dueDate);
   
-    // Require that the due date/time is at least one minute after now
-    if (due.getTime() < now.getTime() + 60000) {
-      req.flash('error_msg', 'Due date must be at least 1 minute after the current time.');
-      return res.redirect('/add-task');
+    if (status !== 'Completed') {
+      // For non-completed tasks, if dueDate is provided, it must be at least 1 minute after now.
+      if (dueDate) {
+        const due = new Date(dueDate);
+        if (due.getTime() < now.getTime() + 60000) {
+          req.flash('error_msg', 'Due date must be at least 1 minute after the current time.');
+          return res.redirect('/add-task');
+        }
+      }
+    } else {
+      // For completed tasks, a completedDate is required.
+      if (!completedDate) {
+        req.flash('error_msg', 'Completed tasks must have a completion date.');
+        return res.redirect('/add-task');
+      }
+      // We do not validate dueDate when the task is completed.
     }
   
-    if (status === 'Completed' && !completedDate) {
-      req.flash('error_msg', 'Completed tasks must have a completion date.');
-      return res.redirect('/add-task');
-    }
-  
-    addTask({ name, status, dueDate, completedDate, userId: req.session.user.id });
+    // Pass dueDate as-is (or null if not provided)
+    addTask({ name, status, dueDate: dueDate || null, completedDate, priority, userId: req.session.user.id });
     req.flash('success_msg', 'Task added successfully!');
     res.redirect('/');
   });
   
-
 // Edit Task Form
 server.get('/edit-task/:id', ensureAuthenticated, (req, res) => {
     const taskId = parseInt(req.params.id, 10);
@@ -228,7 +279,7 @@ server.get('/edit-task/:id', ensureAuthenticated, (req, res) => {
 
 // Update Task Route
 server.post('/update-task/:id', ensureAuthenticated, (req, res) => {
-    const { name, status, dueDate, completedDate } = req.body;
+    const { name, status, dueDate, completedDate, priority } = req.body;
     const taskId = parseInt(req.params.id, 10);
     const task = getTasks().find(t => parseInt(t.id, 10) === taskId);
     if (!task || Number(task.userId) !== Number(req.session.user.id)) {
@@ -236,22 +287,72 @@ server.post('/update-task/:id', ensureAuthenticated, (req, res) => {
     }
   
     const now = new Date();
-    const due = new Date(dueDate);
-    // Validate that the due date/time is at least one minute after now
-    if (due.getTime() < now.getTime() + 60000) {
-      req.flash('error_msg', 'Due date must be at least 1 minute after the current time.');
-      return res.redirect(`/edit-task/${taskId}`);
+  
+    if (status !== 'Completed') {
+      // For non-completed tasks, if dueDate is provided, it must be at least 1 minute after now.
+      if (dueDate) {
+        const due = new Date(dueDate);
+        if (due.getTime() < now.getTime() + 60000) {
+          req.flash('error_msg', 'Due date must be at least 1 minute after the current time.');
+          return res.redirect(`/edit-task/${taskId}`);
+        }
+      }
+    } else {
+      // For completed tasks, a completedDate is required.
+      if (!completedDate) {
+        req.flash('error_msg', 'Completed tasks must have a completion date.');
+        return res.redirect(`/edit-task/${taskId}`);
+      }
+      // Again, we do not enforce any dueDate validation for completed tasks.
     }
   
-    if (status === 'Completed' && !completedDate) {
-      req.flash('error_msg', 'Completed tasks must have a completion date.');
-      return res.redirect(`/edit-task/${taskId}`);
-    }
-  
-    updateTask(taskId, { name, status, dueDate, completedDate });
+    updateTask(taskId, { name, status, dueDate: dueDate || null, completedDate, priority });
     req.flash('success_msg', 'Task updated successfully!');
     res.redirect('/');
+  });  
+
+// New route for updating a task's status from home oage
+server.post('/update-status/:id', ensureAuthenticated, (req, res) => {
+    const { status } = req.body; // "Completed" or "Pending"
+    const taskId = parseInt(req.params.id, 10);
+    const task = getTasks().find(t => parseInt(t.id, 10) === taskId);
+  
+    if (!task || Number(task.userId) !== Number(req.session.user.id)) {
+      return res.status(403).json({ success: false, message: "Unauthorized or task not found" });
+    }
+  
+    const now = new Date();
+  
+    if (status === "Completed") {
+      // Mark task as Completed and set its completedDate to now.
+      updateTask(taskId, { status: "Completed", completedDate: now.toISOString() });
+      return res.json({
+        success: true,
+        message: "Task marked as Completed",
+        completedDate: now.toISOString()
+      });
+    } else {
+      // For any other status (e.g. "Pending"), update accordingly.
+      updateTask(taskId, { status: "Pending", completedDate: null });
+      return res.json({
+        success: true,
+        message: "Task marked as Pending"
+      });
+    }
   });
+
+// Cancelled tasks route
+server.post('/cancel-task/:id', ensureAuthenticated, (req, res) => {
+    const taskId = parseInt(req.params.id, 10);
+    const task = getTasks().find(t => parseInt(t.id, 10) === taskId);
+    if (!task || Number(task.userId) !== Number(req.session.user.id)) {
+      return res.status(403).send('Unauthorized or task not found');
+    }
+    updateTask(taskId, { status: 'Cancelled' });
+    req.flash('success_msg', 'Task cancelled successfully!');
+    res.redirect('/');
+  });  
+  
 
 // Delete Task Route
 server.delete('/delete-task/:id', ensureAuthenticated, (req, res) => {

@@ -1,3 +1,4 @@
+<head>
   <style>
     .past-due {
       color: red;
@@ -7,6 +8,7 @@
 </head>
 <body>
   <h2>Welcome, {{user.name}}!</h2>
+  <li><a href="/add-task">Create New Task</a></li>
 
   <!-- Flash messages -->
   {{#if success_msg}}
@@ -16,55 +18,125 @@
     <div class="alert error">{{error_msg}}</div>
   {{/if}}
 
-  <!-- Filtering and Sorting Form -->
+  <!-- Filtering & Sorting Form -->
   <form action="/" method="GET">
-    <!-- Sorting Dropdown -->
+    <!-- Sorting -->
     <label for="sort">Sort by:</label>
     <select name="sort" id="sort">
       <option value="name" {{#if (eq sort "name")}}selected{{/if}}>Name</option>
       <option value="status" {{#if (eq sort "status")}}selected{{/if}}>Status</option>
-      <option value="date" {{#if (eq sort "date")}}selected{{/if}}>Created Date</option>
       <option value="dueDate" {{#if (eq sort "dueDate")}}selected{{/if}}>Due Date</option>
     </select>
 
-    <!-- Filtering Dropdown -->
-    <label for="filter">Filter:</label>
-    <select name="filter" id="filter" onchange="this.form.submit()">
-      <option value="" {{#if (eq filter "")}}selected{{/if}}>All Tasks</option>
-      <option value="completed" {{#if (eq filter "completed")}}selected{{/if}}>Completed</option>
-      <option value="incomplete" {{#if (eq filter "incomplete")}}selected{{/if}}>Incomplete</option>
-      <option value="pastDue" {{#if (eq filter "pastDue")}}selected{{/if}}>Past Due</option>
-      <option value="dueToday" {{#if (eq filter "dueToday")}}selected{{/if}}>Due Today</option>
-      <option value="dueTomorrow" {{#if (eq filter "dueTomorrow")}}selected{{/if}}>Due Tomorrow</option>
-      <option value="dueNextWeek" {{#if (eq filter "dueNextWeek")}}selected{{/if}}>Due Next Week</option>
+    <!-- Status Filter -->
+    <label for="status">Status:</label>
+    <select name="status" id="status">
+      <option value="all" {{#if (eq statusFilter "all")}}selected{{/if}}>All</option>
+      <option value="Pending" {{#if (eq statusFilter "Pending")}}selected{{/if}}>Pending</option>
+      <option value="In progress" {{#if (eq statusFilter "In progress")}}selected{{/if}}>In Progress</option>
+      <option value="Completed" {{#if (eq statusFilter "Completed")}}selected{{/if}}>Completed</option>
+      <option value="Cancelled" {{#if (eq statusFilter "Cancelled")}}selected{{/if}}>Cancelled</option>
     </select>
 
-    <!-- Search Field -->
+    <!-- Priority Filter -->
+    <label for="priority">Priority:</label>
+    <select name="priority" id="priority">
+      <option value="all" {{#if (eq priorityFilter "all")}}selected{{/if}}>All</option>
+      <option value="High" {{#if (eq priorityFilter "High")}}selected{{/if}}>High</option>
+      <option value="Medium" {{#if (eq priorityFilter "Medium")}}selected{{/if}}>Medium</option>
+      <option value="Low" {{#if (eq priorityFilter "Low")}}selected{{/if}}>Low</option>
+    </select>
+
+    <!-- Due Date Filter -->
+    <label for="due">Due Date Filter:</label>
+    <select name="due" id="due">
+      <option value="all" {{#if (eq dueFilter "all")}}selected{{/if}}>All</option>
+      <option value="pastDue" {{#if (eq dueFilter "pastDue")}}selected{{/if}}>Past Due</option>
+      <option value="dueToday" {{#if (eq dueFilter "dueToday")}}selected{{/if}}>Due Today</option>
+      <option value="dueTomorrow" {{#if (eq dueFilter "dueTomorrow")}}selected{{/if}}>Due Tomorrow</option>
+      <option value="dueNextWeek" {{#if (eq dueFilter "dueNextWeek")}}selected{{/if}}>Due Next Week</option>
+      <option value="specific" {{#if (eq dueFilter "specific")}}selected{{/if}}>Specific Date</option>
+    </select>
+    {{#if (eq dueFilter "specific")}}
+      <label for="specificDue">Specific Due Date:</label>
+      <input type="date" name="specificDue" id="specificDue" value="{{specificDue}}">
+    {{/if}}
+
+    <!-- View Filter -->
+    <label for="view">View:</label>
+    <select name="view" id="view">
+      <option value="default" {{#if (eq view "default")}}selected{{/if}}>Active Tasks</option>
+      <option value="all" {{#if (eq view "all")}}selected{{/if}}>All Tasks</option>
+    </select>
+
+    <!-- Search -->
     <label for="search">Search:</label>
     <input type="text" name="search" id="search" placeholder="Search tasks" value="{{search}}">
 
     <button type="submit">Apply Filters</button>
   </form>
 
+  <!-- Add Task Link -->
+  <a href="/add-task"><button>Add Task</button></a>
+
   <!-- Task List -->
   <h2>Task List</h2>
   <ul>
     {{#each tasks}}
       <li>
+        <!-- Checkbox to mark complete/pending (handled via AJAX) -->
+        <input type="checkbox" class="complete-checkbox" data-task-id="{{this.id}}"
+               {{#if (eq this.status "Completed")}}checked{{/if}}>
         <span>{{this.name}}</span>
-        <span>{{this.status}}</span>
-        <!-- Mark tasks past due in red using the "lt" helper -->
-        <span class="{{#if (lt this.dueDate ../today)}}past-due{{/if}}">
-          Due Date: {{this.dueDate}}
-        </span>
+        <span>Status: {{this.status}}</span>
+        <span>Priority: {{this.priority}}</span>
+        {{#if this.dueDate}}
+          <span class="{{#if (lt this.dueDate ../today)}}past-due{{/if}}">
+            Due: {{this.dueDate}}
+          </span>
+        {{else}}
+          <span>Due: None</span>
+        {{/if}}
         <a href="/edit-task/{{this.id}}">Edit</a>
-        <form action="/delete-task/{{this.id}}" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this task?');">
-          <input type="hidden" name="_method" value="DELETE">
-          <button type="submit">Delete</button>
-        </form>
+        {{#if (eq this.status "Cancelled")}}
+          <span>Cancelled</span>
+        {{else}}
+          <form action="/cancel-task/{{this.id}}" method="POST" style="display:inline;" 
+                onsubmit="return confirm('Are you sure you want to cancel this task?');">
+            <button type="submit">Cancel</button>
+          </form>
+        {{/if}}
       </li>
     {{else}}
       <li>No tasks found.</li>
     {{/each}}
   </ul>
+
+  <script>
+    document.querySelectorAll('.complete-checkbox').forEach(function(checkbox) {
+      checkbox.addEventListener('change', function() {
+        const taskId = this.getAttribute('data-task-id');
+        const newStatus = this.checked ? "Completed" : "Pending";
+        fetch(`/update-status/${taskId}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status: newStatus })
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            console.log(data.message);
+          } else {
+            alert("Error: " + data.message);
+            this.checked = !this.checked;
+          }
+        })
+        .catch(err => {
+          console.error('Error updating status:', err);
+          alert("Error updating status");
+          this.checked = !this.checked;
+        });
+      });
+    });
+  </script>
 </body>
