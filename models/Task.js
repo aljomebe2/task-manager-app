@@ -27,8 +27,9 @@ export function addTask(task) {
     const tasks = getTasks();
     tasks.push({
         id: tasks.length + 1,
-        ...task,
         created_at: new Date(),
+        priority: task.priority || "none", 
+        ...task
     });
     saveTasks(tasks);
 }

@@ -1,8 +1,15 @@
-<h2>Login</h2>
-{{#if error_msg}}<p style="color: red;">{{error_msg}}</p>{{/if}}
-<form action="/login" method="POST">
-    <input type="email" name="email" placeholder="Email" required>
-    <input type="password" name="password" placeholder="Password" required>
+{{!< auth}}
+<div class="auth-form">
+  <h2>Login</h2>
+  {{#if error_msg}}
+    <div class="alert error">{{error_msg}}</div>
+  {{/if}}
+  <form action="/login" method="POST">
+    <label for="email">Email:</label>
+    <input type="text" name="email" id="email" required>
+    <label for="password">Password:</label>
+    <input type="password" name="password" id="password" required>
     <button type="submit">Login</button>
-</form>
-<a href="/register">Don't have an account? Register</a>
+  </form>
+  <p>Don't have an account? <a href="/register">Register here</a>.</p>
+</div>

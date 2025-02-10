@@ -1,10 +1,7 @@
-<body>
-  <h1>{{#if task}}Edit Task{{else}}Add Task{{/if}}</h1>
+{{!< main}}
+<div class="task-form">
+  <h2>{{#if task}}Edit Task{{else}}Add Task{{/if}}</h2>
 
-  <!-- Flash messages -->
-  {{#if success_msg}}
-    <div class="alert success">{{success_msg}}</div>
-  {{/if}}
   {{#if error_msg}}
     <div class="alert error">{{error_msg}}</div>
   {{/if}}
@@ -16,7 +13,7 @@
     <label for="status">Status:</label>
     <select name="status" id="status">
       <option value="Pending" {{#if task}}{{#if (eq task.status "Pending")}}selected{{/if}}{{else}}selected{{/if}}>Pending</option>
-      <option value="In progress" {{#if task}}{{#if (eq task.status "In progress")}}selected{{/if}}{{/if}}>In progress</option>
+      <option value="In progress" {{#if task}}{{#if (eq task.status "In progress")}}selected{{/if}}{{/if}}>In Progress</option>
       <option value="Cancelled" {{#if task}}{{#if (eq task.status "Cancelled")}}selected{{/if}}{{/if}}>Cancelled</option>
       <option value="Completed" {{#if task}}{{#if (eq task.status "Completed")}}selected{{/if}}{{/if}}>Completed</option>
     </select>
@@ -29,7 +26,6 @@
     </select>
 
     <label for="dueDate">Due Date (with Time):</label>
-    <!-- Due date is optional for non-completed tasks -->
     <input type="datetime-local" name="dueDate" id="dueDate" value="{{task.dueDate}}">
 
     <!-- Container for the completion date field -->
@@ -40,20 +36,18 @@
 
     <button type="submit">{{#if task}}Update Task{{else}}Add Task{{/if}}</button>
   </form>
+</div>
 
-  <!-- JavaScript to show/hide the completion date field based on the status -->
-  <script>
-    function toggleCompletedDate() {
-      const statusSelect = document.getElementById('status');
-      const completedContainer = document.getElementById('completedDateContainer');
-      if (statusSelect.value === "Completed") {
-        completedContainer.style.display = "block";
-      } else {
-        completedContainer.style.display = "none";
-      }
+<script>
+  function toggleCompletedDate() {
+    const statusSelect = document.getElementById('status');
+    const completedContainer = document.getElementById('completedDateContainer');
+    if (statusSelect.value === "Completed") {
+      completedContainer.style.display = "block";
+    } else {
+      completedContainer.style.display = "none";
     }
-    document.getElementById('status').addEventListener('change', toggleCompletedDate);
-    // Initialize on page load:
-    toggleCompletedDate();
-  </script>
-</body>
+  }
+  document.getElementById('status').addEventListener('change', toggleCompletedDate);
+  toggleCompletedDate();
+</script>

@@ -1,26 +1,8 @@
 [
     {
-        "id": 5,
-        "created_at": "2025-02-08T02:00:11.211Z",
-        "completed": false,
-        "dueDate": "2025-02-10T00:00",
-        "name": "Be a user",
-        "status": "In progress",
-        "userId": 2
-    },
-    {
-        "id": 3,
-        "name": "Turn in web APP project",
-        "status": "Cancelled",
-        "dueDate": "2025-02-10",
-        "userId": 1,
-        "created_at": "2025-02-08T04:18:29.719Z",
-        "completedDate": "2025-02-08T15:29:32.129Z"
-    },
-    {
         "id": 3,
         "name": "Sleep ",
-        "status": "Pending",
+        "status": "Cancelled",
         "dueDate": "2025-02-08",
         "userId": 1,
         "created_at": "2025-02-08T04:30:15.561Z"
@@ -35,23 +17,6 @@
         "completedDate": null
     },
     {
-        "id": 5,
-        "name": "Irme a dormir",
-        "status": "Pending",
-        "dueDate": "2025-02-07T23:45",
-        "userId": 1,
-        "created_at": "2025-02-08T04:47:03.975Z"
-    },
-    {
-        "id": 6,
-        "name": "dormir por favor",
-        "status": "Completed",
-        "dueDate": "2025-02-07T23:00",
-        "userId": 1,
-        "created_at": "2025-02-08T04:56:30.454Z",
-        "completedDate": "2025-02-08T15:33:29.954Z"
-    },
-    {
         "id": 7,
         "name": "Sleep as a user",
         "status": "Pending",
@@ -62,15 +27,16 @@
     {
         "id": 8,
         "name": "Finish web hw",
-        "status": "In progress",
+        "status": "Completed",
         "dueDate": "2025-02-10T17:59",
         "priority": "High",
         "userId": 1,
-        "created_at": "2025-02-08T23:59:36.823Z"
+        "created_at": "2025-02-08T23:59:36.823Z",
+        "completedDate": "2025-02-10T05:03:21.469Z"
     },
     {
         "id": 9,
-        "name": "watch serie",
+        "name": "watch documentarie",
         "status": "Completed",
         "dueDate": null,
         "completedDate": "2025-02-08T15:00",
@@ -81,21 +47,31 @@
     {
         "id": 10,
         "name": "Work on life",
-        "status": "Pending",
+        "status": "Completed",
         "dueDate": null,
-        "completedDate": null,
+        "completedDate": "2025-02-10T05:03:18.102Z",
         "priority": "High",
         "userId": 1,
         "created_at": "2025-02-09T05:24:32.975Z"
     },
     {
-        "id": 11,
-        "name": "VADFADF",
-        "status": "Completed",
+        "id": 12,
+        "created_at": "2025-02-09T16:39:20.763Z",
+        "priority": "High",
+        "name": "dsgeqrger2g",
+        "status": "Cancelled",
         "dueDate": null,
-        "completedDate": "2025-02-09T23:29",
-        "priority": "Low",
-        "userId": 1,
-        "created_at": "2025-02-09T05:29:54.769Z"
+        "completedDate": "",
+        "userId": 1
+    },
+    {
+        "id": 13,
+        "created_at": "2025-02-10T05:03:47.888Z",
+        "priority": "High",
+        "name": "AEFEFWE",
+        "status": "Cancelled",
+        "dueDate": "2025-02-10T03:03",
+        "completedDate": "",
+        "userId": 1
     }
 ]

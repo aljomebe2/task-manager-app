@@ -1,22 +1,22 @@
+<head>
+  <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
   <header>
-    <h1>
-      <a href="/">Tasked</a>
-    </h1>
-    <h2>The ultimate task tracker</h2>
-    <nav>
-      <ul>
-        {{#if user}}
+    <h1><a href="/">Task-it Dashboard</a></h1>
+    {{#if user}}
+      <nav>
+        <ul>
           <li><a href="/logout">Logout</a></li>
-        {{else}}
-          <li><a href="/login">Login</a></li>
-          <li><a href="/register">Register</a></li>
-        {{/if}}
-      </ul>
-    </nav>
+        </ul>
+      </nav>
+    {{/if}}
   </header>
   <main>
     {{{body}}}
   </main>
+  <footer>
+    <p>Task-it: The ultimate task tracker.</p>
+  </footer>
 </body>
+</html>

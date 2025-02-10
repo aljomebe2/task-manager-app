@@ -1,0 +1,168 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #fffde7;
+    color: #333;
+  }
+  
+  header {
+    background-color: #FFC107; 
+    color: #333;
+    padding: 1rem;
+    position: relative;
+  }
+  
+  header h1 a {
+    color: #333;
+    text-decoration: none;
+  }
+  
+  header nav {
+    position: absolute;
+    right: 1rem;
+    top: 1rem;
+  }
+  
+  header nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  
+  header nav ul li {
+    display: inline-block;
+    margin-left: 1rem;
+  }
+  
+  header nav ul li a {
+    color: #333;
+    text-decoration: none;
+    font-weight: bold;
+  }
+  
+  /* Dashboard */
+  .dashboard {
+    max-width: 1200px;
+    margin: 2rem auto;
+    background: white;
+    padding: 1rem 2rem;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Filtering Options */
+  .filter-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+  
+  .filter-group label {
+    font-weight: bold;
+  }
+  
+  .filter-group select,
+  .filter-group input[type="date"],
+  .filter-group input[type="text"] {
+    padding: 0.3rem;
+    font-size: 1rem;
+  }
+  
+  /* Create Task Button, made large and visible */
+  .create-task-btn {
+    background-color: #FFC107;
+    color: #333;
+    padding: 0.8rem 1.5rem;
+    border: none;
+    font-size: 1.1rem;
+    cursor: pointer;
+    margin-bottom: 1rem;
+  }
+  
+  .create-task-btn:hover {
+    background-color: #FFB300;
+  }
+  
+  /* task table */
+  .task-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+  }
+  
+  .task-table th,
+  .task-table td {
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    text-align: left;
+  }
+  
+  .task-table th {
+    background-color: #FFF8E1;
+  }
+  
+  .task-table tr:nth-child(even) {
+    background-color: #FFFDE7;
+  }
+  
+  /* Past Due highlight */
+  .past-due {
+    color: red;
+    font-weight: bold;
+  }
+  
+  /* Styling forms: Login, register, and add task */
+  .auth-form,
+  .task-form {
+    max-width: 400px;
+    margin: 2rem auto;
+    background: white;
+    padding: 2rem;
+    border-radius: 4px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .auth-form h2,
+  .task-form h2 {
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+  
+  .auth-form input[type="text"],
+  .auth-form input[type="password"],
+  .task-form input[type="text"],
+  .task-form input[type="datetime-local"],
+  .task-form input[type="date"],
+  .task-form select {
+    width: 100%;
+    padding: 0.5rem;
+    margin: 0.5rem 0 1rem 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  .auth-form button,
+  .task-form button {
+    width: 100%;
+    padding: 0.7rem;
+    background-color: #FFC107;
+    color: #333;
+    border: none;
+    font-size: 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .auth-form button:hover,
+  .task-form button:hover {
+    background-color: #FFB300;
+  }
+  
+  /* Footer */
+  footer {
+    text-align: center;
+    padding: 1rem;
+    font-size: 0.9rem;
+    color: #777;
+  }
+  

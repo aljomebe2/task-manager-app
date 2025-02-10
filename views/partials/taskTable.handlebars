@@ -1,0 +1,83 @@
+<table class="task-table">
+  <thead>
+    <tr>
+      <th>Done</th>
+      <th>Name</th>
+      <th>Status</th>
+      <th>Priority</th>
+      <th>Due Date</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{#if tasks.length}}
+      {{#each tasks}}
+        <tr>
+          <td>
+            <input type="checkbox" class="complete-checkbox" data-task-id="{{this.id}}"
+              {{#if (eq this.status "Completed")}}checked{{/if}}>
+          </td>
+          <td>{{this.name}}</td>
+          <td>{{this.status}}</td>
+          <td>{{this.priority}}</td>
+          <td>
+            {{#if this.dueDate}}
+              <span class="{{#if (lt this.dueDate ../today)}}past-due{{/if}}">
+                {{this.dueDate}}
+              </span>
+            {{else}}
+              None
+            {{/if}}
+          </td>
+          <td>
+            <a href="/edit-task/{{this.id}}">Edit</a>
+            <!-- Cancel Button -->
+            <form action="/cancel-task/{{this.id}}" method="POST" style="display:inline;" 
+                  onsubmit="return confirm('Are you sure you want to cancel this task?');">
+              <button type="submit">Cancel</button>
+            </form>
+            <!-- Delete Button -->
+            <form action="/delete-task/{{this.id}}" method="POST" style="display:inline;" 
+                  onsubmit="return confirm('Are you sure you want to permanently delete this task?');">
+              <input type="hidden" name="_method" value="DELETE">
+              <button type="submit">Delete</button>
+            </form>
+          </td>
+        </tr>
+      {{/each}}
+    {{else}}
+      <tr>
+        <td colspan="6">No tasks found.</td>
+      </tr>
+    {{/if}}
+  </tbody>
+</table>
+
+<script>
+  //  Complete-checkboxes to update task status using AJAX
+  document.querySelectorAll('.complete-checkbox').forEach(function(checkbox) {
+    checkbox.addEventListener('change', function() {
+      const taskId = this.getAttribute('data-task-id');
+      const newStatus = this.checked ? "Completed" : "Pending";
+      fetch(`/update-status/${taskId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: newStatus })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          console.log(data.message);
+        } else {
+          alert("Error: " + data.message);
+          this.checked = !this.checked;
+        }
+      })
+      .catch(err => {
+        console.error('Error updating status:', err);
+        alert("Error updating status");
+        this.checked = !this.checked;
+      });
+    });
+  });
+</script>
