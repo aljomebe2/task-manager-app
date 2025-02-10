@@ -4,6 +4,25 @@ Task-it is a sleek, modern task management web application that empowers users t
 
 Get to experience modern productivity with the ultimate task tracker: Task-it.
 
+Installation & Setup:
+
+1. Clone the repository
+
+- git clone https://github.com/aljomebe2/task-manager-app.git
+- cd task-manager-app
+
+2. Install dependencies
+
+- npm install
+
+3. Run App
+
+- npm run dev
+
+4. Open app in browser
+
+It will run on http://localhost:3000
+
 Key Features:
 - User Authentication:
 Secure user registration, login, and logout with simple implementations of hashed passwords and session management.
